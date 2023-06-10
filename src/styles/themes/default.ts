@@ -5,4 +5,6 @@ export const defaultheme = {
   background: '#F6F8FC',
   text_primary: '#1E1E1E',
   text_secundary: '#5C5C5C',
+  border: '#DDDDDD',
+  blue: '#1389E0',
 }
