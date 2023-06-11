@@ -1,6 +1,8 @@
 'use client'
+import { client } from '@/graphql/apollo'
 import { GlobalStyle } from '@/styles/global'
 import { defaultheme } from '@/styles/themes/default'
+import { ApolloProvider } from '@apollo/client'
 import { Poppins } from 'next/font/google'
 import { ReactNode } from 'react'
 import { ThemeProvider } from 'styled-components'
@@ -17,10 +19,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <title>DropMail</title>
       </head>
       <body className={poppins.className}>
-        <ThemeProvider theme={defaultheme}>
-          {children}
-          <GlobalStyle />
-        </ThemeProvider>
+        <ApolloProvider client={client}>
+          <ThemeProvider theme={defaultheme}>
+            {children}
+            <GlobalStyle />
+          </ThemeProvider>
+        </ApolloProvider>
       </body>
     </html>
   )

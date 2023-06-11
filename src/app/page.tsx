@@ -1,14 +1,30 @@
 'use client'
 import { Copy, ArrowClockwise } from 'phosphor-react'
+import { Header } from '@/components/Header'
+import { gql } from '@apollo/client/core'
+import { useQuery } from '@apollo/client/react'
 import {
   EmailContainer,
   EmailContent,
   EmailPreview,
   HomeContainer,
 } from './styles'
-import { Header } from '@/components/Header'
+
+const GET_DATA = gql`
+  query {
+    domains {
+      id
+      name
+      avaiableVia
+    }
+  }
+`
 
 export default function Home() {
+  const { data } = useQuery(GET_DATA)
+
+  console.log(data)
+
   return (
     <HomeContainer>
       <Header />
