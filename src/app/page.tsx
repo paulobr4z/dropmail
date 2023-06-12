@@ -1,8 +1,15 @@
 'use client'
 import { Copy, ArrowClockwise } from 'phosphor-react'
 import { Header } from '@/components/Header'
-import { gql } from '@apollo/client/core'
-import { useQuery } from '@apollo/client/react'
+import { useMutation, useQuery } from '@apollo/client'
+import {
+  getSessionMails,
+  introduceSession,
+  getAllSessions,
+} from '@/services/querys'
+import { useEffect, useState } from 'react'
+import { IUserSession } from '@/types'
+
 import {
   EmailContainer,
   EmailContent,
@@ -10,20 +17,45 @@ import {
   HomeContainer,
 } from './styles'
 
-const GET_DATA = gql`
-  query {
-    domains {
-      id
-      name
-      avaiableVia
-    }
-  }
-`
-
 export default function Home() {
-  const { data } = useQuery(GET_DATA)
+  const [createSession] = useMutation(introduceSession)
+  const [userSessionInfo, setUserSessionInfo] = useState<IUserSession>()
+  const { data } = useQuery(getSessionMails, {
+    variables: { sessionId: userSessionInfo?.id },
+  })
 
   console.log(data)
+  console.log(userSessionInfo)
+
+  async function createNewSession() {
+    try {
+      const { data } = await createSession()
+
+      const userInfo: IUserSession = {
+        id: data.introduceSession.id,
+        email: data.introduceSession.addresses[0].address,
+      }
+
+      setUserSessionInfo(userInfo)
+      localStorage.setItem('@maildrop', JSON.stringify(userInfo))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    const userInfoLocalStorage = JSON.parse(
+      localStorage.getItem('@maildrop') || '',
+    )
+
+    createNewSession()
+
+    if (userInfoLocalStorage === '') {
+      createNewSession()
+    } else {
+      setUserSessionInfo(userInfoLocalStorage)
+    }
+  }, [])
 
   return (
     <HomeContainer>

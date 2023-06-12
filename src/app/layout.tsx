@@ -1,5 +1,5 @@
 'use client'
-import { client } from '@/graphql/apollo'
+import { client } from '@/services/client'
 import { GlobalStyle } from '@/styles/global'
 import { defaultheme } from '@/styles/themes/default'
 import { ApolloProvider } from '@apollo/client'
