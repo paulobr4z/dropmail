@@ -1,31 +1,39 @@
 'use client'
-import { Copy, ArrowClockwise } from 'phosphor-react'
+import { useEffect, useState } from 'react'
 import { Header } from '@/components/Header'
 import { useMutation, useQuery } from '@apollo/client'
+import { InputEmail } from '@/components/InputEmail'
+import { RefreshEmail } from '@/components/RefreshEmail'
+import { EmailContent } from '@/components/EmailContent'
+import { Notifications } from '@/components/Notifications'
+import { IEmail, ISessions, IUserSession } from '@/types'
 import {
-  getSessionMails,
-  introduceSession,
   getAllSessions,
+  getSessionEmails,
+  introduceSession,
 } from '@/services/querys'
-import { useEffect, useState } from 'react'
-import { IUserSession } from '@/types'
 
-import {
-  EmailContainer,
-  EmailContent,
-  EmailPreview,
-  HomeContainer,
-} from './styles'
+import { EmailContainer, EmailPreview, HomeContainer } from './styles'
 
 export default function Home() {
   const [createSession] = useMutation(introduceSession)
   const [userSessionInfo, setUserSessionInfo] = useState<IUserSession>()
-  const { data } = useQuery(getSessionMails, {
+  const [emails, setEmails] = useState<IEmail[]>([])
+  const [emailSelected, setEmailSelected] = useState(0)
+  const [sessions, setSessions] = useState<ISessions[]>([])
+
+  const { refetch } = useQuery(getSessionEmails, {
     variables: { sessionId: userSessionInfo?.id },
+    onCompleted(data) {
+      // setEmails(data?.session.mails)
+    },
   })
 
-  console.log(data)
-  console.log(userSessionInfo)
+  useQuery(getAllSessions, {
+    onCompleted(data) {
+      setSessions(data.sessions)
+    },
+  })
 
   async function createNewSession() {
     try {
@@ -34,6 +42,7 @@ export default function Home() {
       const userInfo: IUserSession = {
         id: data.introduceSession.id,
         email: data.introduceSession.addresses[0].address,
+        expiresAt: data.introduceSession.expiresAt,
       }
 
       setUserSessionInfo(userInfo)
@@ -44,18 +53,22 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const userInfoLocalStorage = JSON.parse(
-      localStorage.getItem('@maildrop') || '',
-    )
+    const userInfoLocalStorage = localStorage.getItem('@maildrop') || ''
 
-    createNewSession()
-
-    if (userInfoLocalStorage === '') {
+    if (!userInfoLocalStorage) {
       createNewSession()
     } else {
-      setUserSessionInfo(userInfoLocalStorage)
+      setUserSessionInfo(JSON.parse(userInfoLocalStorage))
     }
   }, [])
+
+  useEffect(() => {
+    const hasSession = sessions.some((item) => item.id === userSessionInfo?.id)
+
+    if (!hasSession) {
+      createNewSession()
+    }
+  }, [sessions])
 
   return (
     <HomeContainer>
@@ -63,50 +76,30 @@ export default function Home() {
       <div className="create-email">
         <div className="content">
           <p>Your temporary email address</p>
-          <div className="input-email">
-            <input type="text" />
-            <div className="copy">
-              <Copy size={24} />
-              <p>Copy</p>
-            </div>
-          </div>
-          <div className="refresh-email">
-            <span>
-              <p>Autorefresh in</p>
-              <div className="refresh-seconds">
-                <p>15</p>
-              </div>
-            </span>
-            <span>
-              <ArrowClockwise size={24} />
-              <p>Refresh</p>
-            </span>
-          </div>
+          <InputEmail email={userSessionInfo?.email} />
+          <RefreshEmail refreshInbox={() => refetch()} />
         </div>
       </div>
       <EmailContainer>
         <EmailPreview>
           <h4>Inbox</h4>
           <div className="preview">
-            <div className="preview-item">
-              <div className="subject">Hello</div>
-              <div className="title">Welcome</div>
-              <div className="text">Your temp e-mail adress is ready...</div>
-            </div>
-            <div className="preview-item">
-              <div className="subject">Hello</div>
-              <div className="title">Welcome</div>
-              <div className="text">Your temp e-mail adress is ready...</div>
-            </div>
+            {emails.map((email, index) => (
+              <div
+                className="preview-item"
+                key={email.fromAddr + index}
+                onClick={() => setEmailSelected(index)}
+              >
+                <div className="subject">{email.headerSubject}</div>
+                <div className="title">{email.fromAddr}</div>
+                <div className="text">{email.text}</div>
+              </div>
+            ))}
           </div>
         </EmailPreview>
-        <EmailContent>
-          <h5>Welcome</h5>
-          <div className="email-body">
-            <p>Your temp e-mail adress is ready</p>
-          </div>
-        </EmailContent>
+        <EmailContent emails={emails} emailSelected={emailSelected} />
       </EmailContainer>
+      <Notifications />
     </HomeContainer>
   )
 }

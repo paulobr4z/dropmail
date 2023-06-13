@@ -12,7 +12,7 @@ const introduceSession = gql`
   }
 `
 
-const getSessionMails = gql`
+const getSessionEmails = gql`
   query GetSessionMails($sessionId: ID!) {
     session(id: $sessionId) {
       mails {
@@ -44,4 +44,4 @@ const getAllSessions = gql`
   }
 `
 
-export { introduceSession, getSessionMails, getAllSessions }
+export { introduceSession, getSessionEmails, getAllSessions }
