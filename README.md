@@ -2,6 +2,10 @@
 
 O objetivo do desafio é desenvolver uma aplicação web que possibilite a criação de emails temporarios válidos, a aplicação deve consumir uma API de email temporário para que os usuários possam utilizar serviços sem expor seu email real, ficando livre spam, propagandas no email, hackers e ataques de robôs.
 
+[Link da aplicação](dropmail-pi.vercel.app)
+
+![image 5](https://github.com/paulobr4z/dropmail/assets/52705622/135a8e00-a151-473a-a58a-4c3eea39d11f)
+
 ## Tecnologias e ferramentas utilizadas no desenvolvimento do projeto:
 
 - Front-end
@@ -11,7 +15,7 @@ O objetivo do desafio é desenvolver uma aplicação web que possibilite a cria�
     * React-toastify
     * Apollo
     * Graphql
-    * Deploy: [Vercel](https://vercel.com)
+    * Deploy: [Vercel](dropmail-pi.vercel.app)
 
 
 ## Instalação e Inicialização do projeto
