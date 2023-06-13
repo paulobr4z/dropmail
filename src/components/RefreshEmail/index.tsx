@@ -22,7 +22,7 @@ export function RefreshEmail({ refreshInbox }: IRefreshEmail) {
 
   useEffect(() => {
     updateTime()
-  }, [])
+  }, [time])
 
   return (
     <RefreshEmailContainer>

@@ -16,6 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-br">
       <head>
+        <link rel='icon' href='/favicon.ico'/>
         <title>DropMail</title>
       </head>
       <body className={poppins.className}>

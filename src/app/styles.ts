@@ -61,6 +61,7 @@ export const EmailPreview = styled.aside`
     .preview-item {
       padding: 4px;
       border-bottom: 1px solid ${({ theme }) => theme.border};
+      cursor: pointer;
     }
   }
 `

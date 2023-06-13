@@ -25,7 +25,7 @@ export default function Home() {
   const { refetch } = useQuery(getSessionEmails, {
     variables: { sessionId: userSessionInfo?.id },
     onCompleted(data) {
-      // setEmails(data?.session.mails)
+      setEmails(data?.session.mails)
     },
   })
 
